@@ -38,7 +38,7 @@ The app detects the provider from your key automatically. The model name is edit
 - Installable PWA, offline shell, Android APK ready
 
 ## Try it
-1. Open the live app: `https://YOUR-USERNAME.github.io/nutrilens/`
+1. Open the live app: `https://thetechbot.github.io/nutrilens/`
 2. Go to **Settings → AI provider**, paste your own API key (provider is detected automatically), tap **Save**.
 3. Tap **+** (or **Scan food**), add a photo, tap **Analyze**.
 
