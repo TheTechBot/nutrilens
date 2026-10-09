@@ -25,7 +25,7 @@ NutriLens is an AI food tracker built with plain HTML, CSS and JavaScript plus t
 - Installable PWA, offline shell, Android APK ready
 
 ## Try it
-1. Open the live app: `https://YOUR-USERNAME.github.io/nutrilens/`
+1. Open the live app: `https://thetechbot.github.io/nutrilens/`
 2. Go to **Settings** and paste your own [Anthropic API key](https://console.anthropic.com/).
 3. Tap **+** (or **Scan food**), add a photo, tap **Analyze**.
 
