@@ -1,0 +1,16 @@
+{
+  "name": "NutriLens",
+  "short_name": "NutriLens",
+  "description": "AI food photo calorie and macro tracker",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101B2D",
+  "theme_color": "#101B2D",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
