@@ -67,6 +67,9 @@ input[type=text],input[type=password],input[type=number],select{width:100%;paddi
 .chips{display:flex;flex-wrap:wrap;gap:6px;max-height:64px;overflow:hidden}.chips span{background:var(--sf2);border-radius:20px;padding:4px 10px;font-size:.75rem}
 .adv{font-size:.82rem;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .row2{display:flex;gap:8px}.row2 .btn{margin-top:0}
+.seg{display:flex;gap:6px;background:var(--sf);border:1px solid var(--sf2);padding:4px;border-radius:12px;flex:none}.seg button{flex:1;border:0;background:none;color:var(--mute);padding:9px;border-radius:9px;font-size:.88rem;cursor:pointer}.seg button.on{background:var(--sf2);color:var(--ink)}
+.pane{display:none}.pane.on{display:block}
+a{color:var(--acc)}
 .sw{display:flex;gap:10px;margin:8px 0}.sw button{width:38px;height:38px;border-radius:50%;border:2px solid transparent;cursor:pointer}.sw button.on{outline:3px solid var(--acc);outline-offset:2px}
 .acc{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;font-size:.85rem}.acc input{width:54px;height:34px;border:0;background:none;padding:0}
 nav{flex:none;display:flex;justify-content:space-around;align-items:center;padding:6px 6px calc(env(safe-area-inset-bottom,0px) + 8px);margin:0 -14px;background:var(--sf);border-top:1px solid var(--sf2)}
@@ -104,6 +107,8 @@ h2{font-size:1rem}
 .deskonly{display:block;color:var(--mute);font-size:.9rem;padding-left:18px;line-height:1.7;align-self:end}
 #set.on{display:grid;grid-template-columns:1fr 1fr;align-content:start}
 #set .row2{grid-column:1/3}
+.seg{display:none}.pane{display:block}
+#scan .card.fl{grid-template-rows:auto auto auto auto 1fr}#scan .drop{grid-row:1/6}#scan #using{grid-column:2;grid-row:4;align-self:start}#scan .deskonly{grid-row:5}
 .sheet{padding:22px 26px;justify-content:center;gap:12px}
 .sheet>*{width:min(520px,100%);align-self:center}
 }
@@ -119,7 +124,7 @@ nav .go{width:100%;height:50px;border-radius:14px;margin:0 0 12px;display:flex;f
 nav .go::after{content:'Scan food'}
 }
 @media(min-width:1700px){html{font-size:19px}}
-@media(min-width:700px) and (max-height:520px){.app{grid-template-columns:70px 1fr}.view{inset:12px 16px}.sheet{padding:12px 16px}.ring{width:110px}nav .go{width:44px;height:44px}.lb{display:none}}
+@media(min-width:700px) and (max-height:520px){.app{grid-template-columns:70px 1fr}.view{inset:12px 16px}.sheet{padding:12px 16px}#set input,#set select{padding:8px 10px;margin-top:5px}#set .card>.note:last-child{display:none}#set .btn{padding:9px}.ring{width:110px}nav .go{width:44px;height:44px}.lb{display:none}}
 @media(max-height:620px){.app{padding-top:6px}header{padding-bottom:4px}.card{padding:9px 12px}.ring{width:96px}.week{height:52px}}
 @media(max-height:520px){#wk{display:none}}
 @media(max-height:520px){.sheet{gap:5px}.sheet>.note,.chips{display:none}.sheet .m{margin:3px 0}.big{font-size:2rem}.sheet .btn{padding:9px}}
@@ -148,16 +153,25 @@ nav .go::after{content:'Scan food'}
     <input id="note" type="text" placeholder="Or describe it: 2 dosa with sambar">
     <button class="btn" id="go">Analyze</button>
     <p class="err" id="err" role="alert"></p>
+    <p class="note" id="using"></p>
     <ol class="deskonly"><li>Add a photo or describe the meal.</li><li>Tap Analyze and wait a few seconds.</li><li>Adjust the portion, pick the meal, add it to today.</li></ol>
   </div>
 </section>
 
 <section class="view" id="set">
-  <div class="card"><h2>Daily calorie goal</h2><input id="goal" type="number" min="800" max="6000" step="50" style="margin-top:0">
-    <h2 style="margin-top:12px">Anthropic API key</h2><input id="key" type="password" autocomplete="off" placeholder="sk-ant-..." style="margin-top:0">
-    <p class="note" style="margin-top:6px">Stored only on this device. Never put your key in the code or on GitHub.</p></div>
-  <div class="card"><h2>Theme</h2><div class="sw" id="sw"></div>
-    <div class="acc">Custom accent colour<span style="display:flex;gap:8px;align-items:center"><input type="color" id="accin" aria-label="Accent colour"><button class="btn alt" id="accrs" style="width:auto;margin:0;padding:8px 12px">Reset</button></span></div></div>
+  <div class="seg" id="seg"><button data-p="ai" class="on">AI provider</button><button data-p="look">Goal &amp; theme</button></div>
+  <div class="pane on" id="p-ai"><div class="card">
+    <h2>AI provider</h2>
+    <select id="prov" aria-label="AI provider" style="margin-top:0"><option value="anthropic">Claude (Anthropic)</option><option value="openai">ChatGPT (OpenAI)</option><option value="gemini">Gemini (Google)</option><option value="openrouter">OpenRouter (any model)</option><option value="custom">Custom (OpenAI-compatible)</option></select>
+    <input id="key" type="password" autocomplete="off" placeholder="Paste your API key">
+    <input id="model" list="models" type="text" autocomplete="off" placeholder="Model name"><datalist id="models"></datalist>
+    <input id="base" type="text" autocomplete="off" placeholder="Base URL, e.g. https://api.groq.com/openai/v1" style="display:none">
+    <p class="note" id="phelp" style="margin-top:8px"></p>
+    <p class="note">Key is stored only on this device. The model must support images.</p>
+  </div></div>
+  <div class="pane" id="p-look"><div class="card"><h2>Daily calorie goal</h2><input id="goal" type="number" min="800" max="6000" step="50" style="margin-top:0">
+    <h2 style="margin-top:12px">Theme</h2><div class="sw" id="sw"></div>
+    <div class="acc">Custom accent colour<span style="display:flex;gap:8px;align-items:center"><input type="color" id="accin" aria-label="Accent colour"><button class="btn alt" id="accrs" style="width:auto;margin:0;padding:8px 12px">Reset</button></span></div></div></div>
   <div class="row2"><button class="btn" id="sv">Save</button><button class="btn alt" id="clr">Clear meals</button></div>
 </section>
 
@@ -186,7 +200,20 @@ nav .go::after{content:'Scan food'}
 const $=s=>document.querySelector(s);
 const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
-let log=store.get('nl_log',[]),goal=+store.get('nl_goal',2000),key=store.get('nl_key2',''),th=store.get('nl_theme',{p:0,acc:null});
+let log=store.get('nl_log',[]),goal=+store.get('nl_goal',2000),th=store.get('nl_theme',{p:0,acc:null});
+const PROVIDERS={
+ anthropic:{n:'Claude (Anthropic)',model:'claude-haiku-5-5',models:['claude-haiku-5-5','claude-sonnet-5-5','claude-sonnet-4-6'],help:'Get a key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>. Keys start with sk-ant-'},
+ openai:{n:'ChatGPT (OpenAI)',model:'gpt-4o-mini',models:['gpt-4o-mini','gpt-4.1-mini','gpt-4o'],help:'Get a key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com</a>. A ChatGPT subscription is not an API key.'},
+ gemini:{n:'Gemini (Google)',model:'gemini-flash-latest',models:['gemini-flash-latest','gemini-3.1-flash-lite','gemini-2.5-flash'],help:'Get a key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>. Keys start with AIza. Has a free tier.'},
+ openrouter:{n:'OpenRouter (any model)',model:'openai/gpt-4o-mini',models:['openai/gpt-4o-mini','google/gemini-2.5-flash','anthropic/claude-haiku-4.5'],help:'One key, many models: <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>. Keys start with sk-or-'},
+ custom:{n:'Custom (OpenAI-compatible)',model:'',models:[],help:'Any OpenAI-style endpoint with vision: Groq, Together, Ollama, LM Studio. Enter the base URL and a vision model name.'}};
+let ai=store.get('nl_ai',null);
+if(!ai){ai={p:'anthropic',c:{}};const old=store.get('nl_key2','');if(old)ai.c.anthropic={key:old}}
+const cc=()=>({p:ai.p,model:PROVIDERS[ai.p].model,...(ai.c[ai.p]||{})});
+function updUsing(){const c=cc();$('#using').textContent=c.key?'Using '+PROVIDERS[ai.p].n.split(' (')[0]+' · '+(c.model||'no model set'):'No API key yet. Add one in Settings.'}
+function fillProv(){const P=PROVIDERS[ai.p],c=ai.c[ai.p]||{};$('#prov').value=ai.p;$('#key').value=c.key||'';$('#model').value=c.model||P.model;$('#base').style.display=ai.p==='custom'?'':'none';$('#base').value=c.base||'';$('#models').innerHTML=P.models.map(m=>`<option value="${m}">`).join('');$('#phelp').innerHTML=P.help}
+function stash(){ai.c[ai.p]={key:$('#key').value.trim(),model:$('#model').value.trim(),base:$('#base').value.trim().replace(/\/+$/,'')}}
+function loadSet(){$('#goal').value=goal;fillProv()}
 let img=null,cur=null,mult=1;
 const dk=d=>new Date(d).toLocaleDateString('en-CA');
 const THEMES=[
@@ -210,7 +237,7 @@ $('#accrs').onclick=()=>{th.acc=null;store.set('nl_theme',th);applyTheme()};
 $('#date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'short'});
 function countUp(el,to,ms=800){const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/ms);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0)}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-function go(v){$('#res').classList.remove('on');document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id===v));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));if(v==='today')renderToday();if(v==='set'){$('#goal').value=goal;$('#key').value=key}}
+function go(v){$('#res').classList.remove('on');document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id===v));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));if(v==='today')renderToday();if(v==='set')loadSet()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
 
 function macroRows(el,vals,tg){el.innerHTML=[['Protein',vals[0],tg[0],'var(--teal)'],['Carbs',vals[1],tg[1],'var(--acc)'],['Fat',vals[2],tg[2],'var(--rose)']].map(([n,v,t,c])=>`<div class="m"><div class="row">${n}<span>${Math.round(v)} / ${Math.round(t)} g</span></div><div class="bar"><i style="background:${c}" data-w="${Math.min(100,v/t*100)}"></i></div></div>`).join('');
@@ -241,19 +268,47 @@ function shrink(f){return new Promise((ok,no)=>{const im=new Image(),u=URL.creat
 $('#file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=await shrink(f);$('#pv').src=d;$('#drop').classList.add('has');img=d.split(',')[1]}catch(x){$('#err').textContent=x.message}};
 $('#drop').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#file').click()}};
 
+const PROMPT=n=>'Estimate nutrition for this meal'+(n?': '+n:'')+'. Reply with JSON only, no markdown: {"dish":string,"serving":string,"calories":number,"protein_g":number,"carbs_g":number,"fat_g":number,"fiber_g":number,"confidence":number 0-100,"items":[{"name":string,"calories":number}],"advice":string (one short tip)}';
+async function callAI(c,prompt,b64){
+  let url,headers={'content-type':'application/json'},body,pick;
+  if(c.p==='anthropic'){
+    url='https://api.anthropic.com/v1/messages';
+    headers={...headers,'x-api-key':c.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+    const content=[];if(b64)content.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}});content.push({type:'text',text:prompt});
+    body={model:c.model,max_tokens:1000,messages:[{role:'user',content}]};
+    pick=d=>d?.content?.find(x=>x.type==='text')?.text;
+  }else if(c.p==='gemini'){
+    url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(c.model)+':generateContent';
+    headers={...headers,'x-goog-api-key':c.key};
+    const parts=[{text:prompt}];if(b64)parts.push({inline_data:{mime_type:'image/jpeg',data:b64}});
+    body={contents:[{parts}],generationConfig:{responseMimeType:'application/json',maxOutputTokens:2048}};
+    pick=d=>d?.candidates?.[0]?.content?.parts?.map(x=>x.text||'').join('');
+  }else{
+    const base=c.p==='openai'?'https://api.openai.com/v1':c.p==='openrouter'?'https://openrouter.ai/api/v1':(c.base||'');
+    if(!base)throw new Error('Add a base URL in Settings.');
+    url=base+'/chat/completions';headers={...headers,authorization:'Bearer '+c.key};
+    const content=[{type:'text',text:prompt}];if(b64)content.push({type:'image_url',image_url:{url:'data:image/jpeg;base64,'+b64}});
+    body={model:c.model,messages:[{role:'user',content}]};
+    if(c.p==='openai'){body.max_completion_tokens=1500;body.response_format={type:'json_object'}}else body.max_tokens=1500;
+    pick=d=>{const m=d?.choices?.[0]?.message?.content;return Array.isArray(m)?m.map(x=>x.text||'').join(''):m};
+  }
+  if(!c.model)throw new Error('Add a model name in Settings.');
+  let r,d;
+  try{r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});d=await r.json()}
+  catch{throw new Error('Network or CORS error. Check internet and key, or try another provider.')}
+  if(!r.ok)throw new Error(d?.error?.message||d?.message||'Request failed ('+r.status+')');
+  const t=pick(d);if(!t)throw new Error('Empty response from the model.');
+  return t;
+}
+function parseJ(t){const m=String(t).match(/\{[\s\S]*\}/);if(!m)throw new Error('Model did not return JSON. Try a different model.');try{return JSON.parse(m[0])}catch{throw new Error('Could not read the model answer. Try again.')}}
+
 $('#go').onclick=async()=>{
-  const note=$('#note').value.trim();$('#err').textContent='';
-  if(!key){go('set');toast('Add your API key first');return}
+  const note=$('#note').value.trim();$('#err').textContent='';const c=cc();
+  if(!c.key){go('set');toast('Add your API key first');return}
   if(!img&&!note){$('#err').textContent='Add a photo or describe the food.';return}
-  const content=[];if(img)content.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:img}});
-  content.push({type:'text',text:'Estimate nutrition for this meal'+(note?': '+note:'')+'. Reply with JSON only, no markdown: {"dish":string,"serving":string,"calories":number,"protein_g":number,"carbs_g":number,"fat_g":number,"fiber_g":number,"confidence":number 0-100,"items":[{"name":string,"calories":number}],"advice":string (one short tip)}'});
   $('#go').disabled=true;$('#go').textContent='Analyzing...';$('#drop').classList.add('busy');
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content}]})});
-    const d=await r.json();if(!r.ok)throw new Error(d?.error?.message||'Request failed ('+r.status+')');
-    const t=d?.content?.find(b=>b.type==='text')?.text;if(!t)throw new Error('Empty response from API.');
-    cur=JSON.parse(t.replace(/```json|```/g,'').trim());mult=1;showRes(true);
-  }catch(x){$('#err').textContent='Error: '+x.message}
+  try{cur=parseJ(await callAI(c,PROMPT(note),img));mult=1;showRes(true)}
+  catch(x){$('#err').textContent='Error: '+x.message+(/model|not found|404|not supported/i.test(x.message)?' Try another model name in Settings.':'')}
   finally{$('#go').disabled=false;$('#go').textContent='Analyze';$('#drop').classList.remove('busy')}
 };
 
@@ -272,10 +327,13 @@ $('#mn').onclick=()=>{if(cur&&mult>.25){mult-=.25;showRes(false)}};
 $('#back').onclick=()=>$('#res').classList.remove('on');
 $('#save').onclick=()=>{const v=vals();log.push({id:Date.now(),ts:Date.now(),meal:$('#meal').value,dish:cur.dish||'Meal',...v});store.set('nl_log',log);
   cur=null;img=null;$('#drop').classList.remove('has');$('#pv').removeAttribute('src');$('#note').value='';$('#file').value='';try{navigator.vibrate&&navigator.vibrate(20)}catch{}toast('Added to today');go('today')};
-$('#sv').onclick=()=>{goal=Math.max(800,+$('#goal').value||2000);key=$('#key').value.trim();store.set('nl_goal',goal);store.set('nl_key2',key);toast('Saved');go('today')};
+$('#prov').onchange=()=>{stash();ai.p=$('#prov').value;fillProv()};
+$('#key').oninput=()=>{const k=$('#key').value.trim();if(ai.p==='custom')return;const d=k.startsWith('sk-ant-')?'anthropic':k.startsWith('sk-or-')?'openrouter':k.startsWith('AIza')?'gemini':k.startsWith('sk-')?'openai':null;if(d&&d!==ai.p){ai.p=d;ai.c[d]={...(ai.c[d]||{}),key:k};fillProv();toast('Detected '+PROVIDERS[d].n.split(' (')[0])}};
+document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.p))});
+$('#sv').onclick=()=>{stash();if(ai.p==='custom'&&!ai.c.custom.base){toast('Add a base URL');return}if(!ai.c[ai.p].model)ai.c[ai.p].model=PROVIDERS[ai.p].model;goal=Math.max(800,+$('#goal').value||2000);store.set('nl_ai',ai);store.set('nl_goal',goal);updUsing();toast('Saved');go('today')};
 $('#clr').onclick=()=>{if(confirm('Delete all saved meals?')){log=[];store.set('nl_log',log);toast('Cleared');go('today')}};
 
-applyTheme();renderToday();
+applyTheme();renderToday();updUsing();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>

@@ -1,7 +1,7 @@
 {
   "name": "NutriLens",
   "short_name": "NutriLens",
-  "description": "AI food photo calorie and macro tracker",
+  "description": "AI food photo calorie and macro tracker. Works with Claude, ChatGPT, Gemini and OpenRouter keys",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
